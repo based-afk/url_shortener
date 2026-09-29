@@ -6,6 +6,7 @@ from sqlalchemy import text
 
 from app.cache import redis
 from app.db import engine
+from app.routes import router
 
 
 @asynccontextmanager
@@ -39,6 +40,6 @@ async def health():
     return JSONResponse(status_code=200 if healthy else 503, content=checks)
 
 
-# Routes for POST /shorten, DELETE /{code} and GET /{code} get added in
-# Pieces 4-5. GET /{code} is a catch-all, so it must be registered LAST,
-# after /health and every other fixed path.
+# Included AFTER /health on purpose: the router will contain the catch-all
+# GET /{code}, and FastAPI matches routes in registration order.
+app.include_router(router)
